@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { addDevice as addDeviceApi } from '../api/addDevice'
+import { SCHEMA_V2 } from '../compat/recordSchema'
 import { getCurrentDeviceName, pearpassVaultClient } from '../instances'
 import { addDeviceFactory } from '../utils/addDeviceFactory'
 import { logger } from '../utils/logger'
@@ -21,7 +22,14 @@ export const addDevice = createAsyncThunk(
       (device) => device.writerKey === writerKey
     )
 
-    if (existingDevice && existingDevice.masterTopic === masterTopic) {
+    const needsSchemaBump =
+      existingDevice && Number(existingDevice.recordSchema) !== SCHEMA_V2
+
+    if (
+      existingDevice &&
+      existingDevice.masterTopic === masterTopic &&
+      !needsSchemaBump
+    ) {
       logger.log('Device already added to vault')
       return existingDevice
     }
@@ -30,7 +38,7 @@ export const addDevice = createAsyncThunk(
       ? { ...existingDevice, createdAt: Date.now() }
       : addDeviceFactory(deviceName, vaultId, writerKey, masterTopic)
 
-    const device = { ...base }
+    const device = { ...base, recordSchema: SCHEMA_V2 }
     if (masterTopic) device.masterTopic = masterTopic
     else delete device.masterTopic
 

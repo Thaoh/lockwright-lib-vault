@@ -1,6 +1,7 @@
 import { generateUniqueId } from '@tetherto/pear-apps-utils-generate-unique-id'
 
 import { validateAndPrepareDevice } from './validateAndPrepareDevice'
+import { SCHEMA_V2 } from '../compat/recordSchema'
 
 /**
  * @param {string} deviceName - device name (e.g. `Platform.OS + ' ' + Platform.Version`)
@@ -24,7 +25,8 @@ export const addDeviceFactory = (
     vaultId: vaultId,
     name: deviceName,
     writerKey,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    recordSchema: SCHEMA_V2
   }
   if (masterTopic) device.masterTopic = masterTopic
 

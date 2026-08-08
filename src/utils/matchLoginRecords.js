@@ -1,4 +1,5 @@
 import { extractDomainName } from './extractDomainName'
+import { deriveWebsitesFromUris } from '../compat/recordSchema'
 
 /**
  * @typedef {'issuer-domain' | 'label-username'} MatchReason
@@ -16,7 +17,8 @@ import { extractDomainName } from './extractDomainName'
  * @property {{
  *   title?: string,
  *   username?: string,
- *   websites?: Array<string>
+ *   websites?: Array<string>,
+ *   uris?: Array<{ uri?: string, match?: string }>
  * }} [data]
  */
 
@@ -87,7 +89,7 @@ export const matchLoginRecords = (parsedOtp, loginRecords) => {
   for (const record of loginRecords) {
     const data = record?.data ?? {}
     const usernameNorm = norm(data.username)
-    const websites = Array.isArray(data.websites) ? data.websites : []
+    const websites = deriveWebsitesFromUris(data.uris, data.websites)
 
     const reasons = []
 

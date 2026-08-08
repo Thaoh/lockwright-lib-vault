@@ -70,7 +70,12 @@ export const updateRecords = createAsyncThunk(
       await vaultAddFiles(filesToAdd)
     }
 
-    await updateRecordsApi(newRecords)
+    await updateRecordsApi(
+      newRecords.map((record) => {
+        const previous = currentRecords.find((r) => r.id === record.id)
+        return previous ? { ...record, previousData: previous } : record
+      })
+    )
 
     return listRecords()
   }

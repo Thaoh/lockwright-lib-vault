@@ -8,7 +8,6 @@ jest.mock('../instances', () => ({
 }))
 
 describe('getFile', () => {
-  const mockKey = 'file-key-123'
   const mockResponse = { data: 'file-content' }
 
   beforeEach(() => {
@@ -27,21 +26,44 @@ describe('getFile', () => {
     )
   })
 
-  it('should call pearpassVaultClient.activeVaultGetFile with the provided key', async () => {
+  it('prefers record-v2 file key when given a v1 key', async () => {
     pearpassVaultClient.activeVaultGetFile.mockResolvedValue(mockResponse)
-    await vaultGetFile(mockKey)
-    expect(pearpassVaultClient.activeVaultGetFile).toHaveBeenCalledWith(mockKey)
+    await vaultGetFile('record/rec1/file/f1')
+    expect(pearpassVaultClient.activeVaultGetFile).toHaveBeenCalledWith(
+      'record-v2/rec1/file/f1'
+    )
+  })
+
+  it('falls back to v1 when v2 miss', async () => {
+    pearpassVaultClient.activeVaultGetFile
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(mockResponse)
+
+    const result = await vaultGetFile('record/rec1/file/f1')
+    expect(result).toBe(mockResponse)
+    expect(pearpassVaultClient.activeVaultGetFile).toHaveBeenNthCalledWith(
+      1,
+      'record-v2/rec1/file/f1'
+    )
+    expect(pearpassVaultClient.activeVaultGetFile).toHaveBeenNthCalledWith(
+      2,
+      'record/rec1/file/f1'
+    )
   })
 
   it('should return the response from pearpassVaultClient.activeVaultGetFile', async () => {
     pearpassVaultClient.activeVaultGetFile.mockResolvedValue(mockResponse)
-    const result = await vaultGetFile(mockKey)
+    const result = await vaultGetFile('record-v2/rec1/file/f1')
     expect(result).toBe(mockResponse)
   })
 
-  it('should propagate errors from pearpassVaultClient.activeVaultGetFile', async () => {
+  it('should propagate errors when both keys fail', async () => {
     const error = new Error('Network error')
-    pearpassVaultClient.activeVaultGetFile.mockRejectedValue(error)
-    await expect(vaultGetFile(mockKey)).rejects.toThrow('Network error')
+    pearpassVaultClient.activeVaultGetFile
+      .mockRejectedValueOnce(error)
+      .mockRejectedValueOnce(error)
+    await expect(vaultGetFile('record/rec1/file/f1')).rejects.toThrow(
+      'Network error'
+    )
   })
 })

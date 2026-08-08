@@ -32,6 +32,26 @@ export { getMyDeviceId } from './utils/getMyDeviceId'
 
 export { ACTION_TYPES, ACTIONS } from './actions'
 
+export {
+  SCHEMA_V2,
+  DEFAULT_URI_MATCH,
+  RECORD_V1_PREFIX,
+  RECORD_V2_PREFIX,
+  VAULT_EXT_KEY,
+  recordKeyV1,
+  recordKeyV2,
+  fileKeyV1,
+  fileKeyV2,
+  projectRecordToV1,
+  toAppRecord,
+  isMatchOnlyChange,
+  deriveWebsitesFromUris,
+  deriveUrisFromWebsites
+} from './compat'
+
+export { setBlockV1DeleteMirror } from './api/setBlockV1DeleteMirror'
+export { emitSchemaMigrationWarning } from './api/emitSchemaMigrationWarning'
+
 export { authoriseCurrentProtectedVault } from './api/authoriseCurrentProtectedVault'
 export { getVaultById } from './api/getVaultById'
 export { getCurrentProtectedVaultEncryption } from './api/getCurrentProtectedVaultEncryption'

@@ -1,3 +1,4 @@
+import { fileKeyV1, fileKeyV2 } from '../compat/recordSchema'
 import { pearpassVaultClient } from '../instances'
 
 /**
@@ -9,10 +10,9 @@ export const vaultRemoveFiles = async (files) => {
   }
 
   await Promise.all(
-    files.map(({ recordId, fileId }) =>
-      pearpassVaultClient.activeVaultRemoveFile(
-        `record/${recordId}/file/${fileId}`
-      )
-    )
+    files.flatMap(({ recordId, fileId }) => [
+      pearpassVaultClient.activeVaultRemoveFile(fileKeyV2(recordId, fileId)),
+      pearpassVaultClient.activeVaultRemoveFile(fileKeyV1(recordId, fileId))
+    ])
   )
 }

@@ -1,0 +1,3 @@
+# Single-package workspace (pnpm v11 project settings).
+strictPeerDependencies: false
+autoInstallPeers: true

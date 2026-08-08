@@ -35,4 +35,23 @@ describe('validateAndPrepareDevice', () => {
       createdAt: 1234567890
     })
   })
+
+  test('preserves recordSchema and unknown fields', () => {
+    const mockDevice = {
+      id: 'test-id-123',
+      vaultId: 'vault-456',
+      name: 'ios',
+      createdAt: 1234567890,
+      recordSchema: 2,
+      features: { uris: true },
+      peerHint: 'keep-me'
+    }
+
+    const result = validateAndPrepareDevice(mockDevice)
+
+    expect(result).toEqual(mockDevice)
+    expect(result.recordSchema).toBe(2)
+    expect(result.features).toEqual({ uris: true })
+    expect(result.peerHint).toBe('keep-me')
+  })
 })

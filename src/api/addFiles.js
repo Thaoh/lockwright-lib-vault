@@ -1,3 +1,4 @@
+import { fileKeyV1, fileKeyV2 } from '../compat/recordSchema'
 import { pearpassVaultClient } from '../instances'
 
 /**
@@ -10,9 +11,22 @@ export const vaultAddFiles = async (files) => {
 
   for (const { recordId, fileId, buffer, name } of files) {
     await pearpassVaultClient.activeVaultAddFile(
-      `record/${recordId}/file/${fileId}`,
+      fileKeyV2(recordId, fileId),
       buffer,
       name
     )
+    try {
+      await pearpassVaultClient.activeVaultAddFile(
+        fileKeyV1(recordId, fileId),
+        buffer,
+        name
+      )
+    } catch {
+      await pearpassVaultClient.activeVaultAddFile(
+        fileKeyV1(recordId, fileId),
+        buffer,
+        name
+      )
+    }
   }
 }

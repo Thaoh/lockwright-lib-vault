@@ -1,6 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { matchPatternToValue } from '@tetherto/pear-apps-utils-pattern-search'
 
+import { deriveWebsitesFromUris } from '../compat/recordSchema'
+
 export const selectRecords = ({ filters, sort } = {}) =>
   createSelector(
     (state) => state.vault,
@@ -89,9 +91,12 @@ const matchRecordToSearchPattern = (searchPattern, record) => {
     note,
     name,
     fullName,
-    websites = [],
+    websites,
+    uris,
     customFields = []
   } = record.data
+
+  const websiteValues = deriveWebsitesFromUris(uris, websites)
 
   const valuesToSearch = [
     title,
@@ -100,7 +105,7 @@ const matchRecordToSearchPattern = (searchPattern, record) => {
     note,
     name,
     fullName,
-    ...websites,
+    ...websiteValues,
     ...customFields.map((field) => field.note)
   ]
 

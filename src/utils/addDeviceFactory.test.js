@@ -35,7 +35,8 @@ describe('addDeviceFactory', () => {
         vaultId,
         name: 'ios',
         writerKey,
-        createdAt: 1749848117883
+        createdAt: 1749848117883,
+        recordSchema: 2
       })
     )
 

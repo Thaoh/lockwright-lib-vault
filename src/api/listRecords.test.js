@@ -6,15 +6,25 @@ describe('listRecords', () => {
     jest.clearAllMocks()
   })
 
-  it('should call activeVaultList with correct path', async () => {
-    const mockRecords = [{ id: '1' }, { id: '2' }]
+  it('lists record-v2/ and normalizes to app records', async () => {
+    const mockRecords = [
+      {
+        id: '1',
+        type: 'login',
+        data: { title: 'A', websites: ['https://a.com'] }
+      }
+    ]
     pearpassVaultClient.activeVaultList.mockResolvedValueOnce(mockRecords)
 
     const result = await listRecords()
 
-    expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledWith('record/')
-    expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledTimes(1)
-    expect(result).toEqual(mockRecords)
+    expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledWith(
+      'record-v2/'
+    )
+    expect(result[0].schema).toBe(2)
+    expect(result[0].data.uris).toEqual([
+      { uri: 'https://a.com', match: 'baseDomain' }
+    ])
   })
 
   it('should propagate errors', async () => {
@@ -22,6 +32,8 @@ describe('listRecords', () => {
     pearpassVaultClient.activeVaultList.mockRejectedValueOnce(mockError)
 
     await expect(listRecords()).rejects.toThrow(mockError)
-    expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledWith('record/')
+    expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledWith(
+      'record-v2/'
+    )
   })
 })

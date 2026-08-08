@@ -35,6 +35,18 @@ describe('matchLoginRecords', () => {
     expect(result[0].reasons).toEqual(['issuer-domain'])
   })
 
+  it('matches issuer using uris when websites absent', () => {
+    const recs = [
+      record('a', {
+        title: 'GitHub work',
+        uris: [{ uri: 'https://github.com', match: 'host' }]
+      })
+    ]
+    const result = matchLoginRecords({ issuer: 'GitHub' }, recs)
+    expect(result.map((m) => m.record.id)).toEqual(['a'])
+    expect(result[0].reasons).toEqual(['issuer-domain'])
+  })
+
   it('matches issuer hostname to website regardless of subdomain', () => {
     const recs = [
       record('a', {

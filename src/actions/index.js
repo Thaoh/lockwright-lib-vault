@@ -1,6 +1,7 @@
 import { deleteVaultActionHandler } from './handlers/deleteVault'
 import { kickDeviceActionHandler } from './handlers/kickDevice'
 import { leaveVaultActionHandler } from './handlers/leaveVault'
+import { schemaMigrationWarningActionHandler } from './handlers/schemaMigrationWarning'
 import { ACTION_TYPES } from './types'
 
 export { ACTION_TYPES }
@@ -11,5 +12,6 @@ export { ACTION_TYPES }
 export const ACTIONS = {
   [ACTION_TYPES.DELETE_VAULT]: deleteVaultActionHandler,
   [ACTION_TYPES.LEAVE_VAULT]: leaveVaultActionHandler,
-  [ACTION_TYPES.KICK_DEVICE]: kickDeviceActionHandler
+  [ACTION_TYPES.KICK_DEVICE]: kickDeviceActionHandler,
+  [ACTION_TYPES.SCHEMA_MIGRATION_WARNING]: schemaMigrationWarningActionHandler
 }

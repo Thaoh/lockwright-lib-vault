@@ -1,4 +1,4 @@
-import { pearpassVaultClient } from '../instances'
+import { writeRecordDualStore } from '../compat/writeRecordDualStore'
 
 /**
  * @param {{
@@ -8,5 +8,5 @@ import { pearpassVaultClient } from '../instances'
  * @returns {Promise<void>}
  */
 export const createRecord = async (record) => {
-  await pearpassVaultClient.activeVaultAdd(`record/${record.id}`, record)
+  await writeRecordDualStore(record)
 }

@@ -28,9 +28,16 @@ const mockCredential = {
   _userId: 'QND9iRzfLqxSDIoB4711RRLXqwISKDmxryYVLW_sEbY'
 }
 
-jest.mock('./validateAndPrepareCustomFields', () => ({
-  validateAndPrepareCustomFields: jest.fn((fields) => fields || [])
-}))
+jest.mock('./validateAndPrepareCustomFields', () => {
+  const { Validator } = require('@tetherto/pear-apps-utils-validator')
+  return {
+    customFieldSchema: Validator.object({
+      type: Validator.string().required(),
+      note: Validator.string()
+    }),
+    validateAndPrepareCustomFields: jest.fn((fields) => fields || [])
+  }
+})
 
 describe('validateAndPrepareLoginData', () => {
   beforeEach(() => {
@@ -51,7 +58,10 @@ describe('validateAndPrepareLoginData', () => {
 
     const result = validateAndPrepareLoginData(loginData)
 
-    expect(result).toEqual(loginData)
+    expect(result).toEqual({
+      ...loginData,
+      uris: [{ uri: 'https://example.com', match: 'baseDomain' }]
+    })
     expect(validateAndPrepareCustomFields).toHaveBeenCalledWith(
       loginData.customFields
     )
@@ -72,8 +82,21 @@ describe('validateAndPrepareLoginData', () => {
       credential: undefined,
       note: undefined,
       websites: ['https://example.com'],
+      uris: [{ uri: 'https://example.com', match: 'baseDomain' }],
       customFields: []
     })
+  })
+
+  test('accepts uris and derives websites', () => {
+    const loginData = {
+      title: 'My Login',
+      uris: [{ uri: 'https://example.com', match: 'host' }]
+    }
+
+    const result = validateAndPrepareLoginData(loginData)
+
+    expect(result.uris).toEqual([{ uri: 'https://example.com', match: 'host' }])
+    expect(result.websites).toEqual(['https://example.com'])
   })
 
   test('should throw error if title is missing', () => {
@@ -129,6 +152,7 @@ describe('validateAndPrepareLoginData', () => {
       credential: null,
       note: null,
       websites: ['https://example.com'],
+      uris: [{ uri: 'https://example.com', match: 'baseDomain' }],
       customFields: []
     })
   })

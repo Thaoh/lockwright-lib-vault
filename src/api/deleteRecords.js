@@ -1,3 +1,4 @@
+import { recordKeyV1, recordKeyV2 } from '../compat/recordSchema'
 import { pearpassVaultClient } from '../instances'
 
 /**
@@ -10,8 +11,9 @@ export const deleteRecords = async (recordIds) => {
   }
 
   await Promise.all(
-    recordIds.map((recordId) =>
-      pearpassVaultClient.activeVaultRemove(`record/${recordId}`)
-    )
+    recordIds.flatMap((recordId) => [
+      pearpassVaultClient.activeVaultRemove(recordKeyV2(recordId)),
+      pearpassVaultClient.activeVaultRemove(recordKeyV1(recordId))
+    ])
   )
 }

@@ -5,6 +5,11 @@ import {
   customFieldSchema,
   validateAndPrepareCustomFields
 } from './validateAndPrepareCustomFields'
+import {
+  DEFAULT_URI_MATCH,
+  deriveUrisFromWebsites,
+  deriveWebsitesFromUris
+} from '../compat/recordSchema'
 import { fileSchema } from '../schemas/fileSchema'
 
 export const otpSchema = Validator.object({
@@ -40,6 +45,11 @@ export const credentialSchema = Validator.object({
   _userId: Validator.string().required()
 })
 
+export const uriEntrySchema = Validator.object({
+  uri: Validator.string().required(),
+  match: Validator.string()
+})
+
 export const loginSchema = Validator.object({
   title: Validator.string().required(),
   username: Validator.string(),
@@ -49,6 +59,7 @@ export const loginSchema = Validator.object({
   credential: credentialSchema,
   note: Validator.string(),
   websites: Validator.array().items(Validator.string().required()),
+  uris: Validator.array().items(uriEntrySchema),
   customFields: Validator.array().items(customFieldSchema),
   attachments: Validator.array().items(fileSchema),
   otp: otpSchema,
@@ -58,6 +69,25 @@ export const loginSchema = Validator.object({
 export const validateAndPrepareLoginData = (login) => {
   const otp = login.otpInput ? parseOtpInput(login.otpInput) : login.otp
 
+  let uris = login.uris
+  let websites = login.websites
+
+  if (Array.isArray(uris)) {
+    uris = uris.map((entry) => ({
+      uri: entry.uri,
+      match:
+        typeof entry.match === 'string' && entry.match.length > 0
+          ? entry.match
+          : DEFAULT_URI_MATCH
+    }))
+    websites = deriveWebsitesFromUris(
+      uris,
+      Array.isArray(websites) ? websites : undefined
+    )
+  } else if (Array.isArray(websites)) {
+    uris = deriveUrisFromWebsites(websites, login.uris)
+  }
+
   const loginData = {
     title: login.title,
     username: login.username,
@@ -66,7 +96,8 @@ export const validateAndPrepareLoginData = (login) => {
     passwordUpdatedAt: login.passwordUpdatedAt,
     credential: login.credential,
     note: login.note,
-    websites: login.websites,
+    websites,
+    uris,
     customFields: validateAndPrepareCustomFields(login.customFields),
     attachments: login.attachments,
     otp,

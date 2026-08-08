@@ -13,12 +13,12 @@ export default {
   },
   moduleNameMapper: {
     '^@tetherto/pear-apps-utils-generate-unique-id$':
-      '/Users/giorgi/Desktop/forks/pear-apps-utils-generate-unique-id/src/index.js',
+      '<rootDir>/test-stubs/pear-apps-utils-generate-unique-id.js',
     '^@tetherto/pear-apps-utils-validator$':
-      '/Users/giorgi/Desktop/forks/pear-apps-utils-validator/src/index.js',
+      '<rootDir>/test-stubs/pear-apps-utils-validator.js',
     '^@tetherto/pear-apps-utils-pattern-search$':
-      '/Users/giorgi/Desktop/forks/pear-apps-utils-pattern-search/src/index.js',
+      '<rootDir>/test-stubs/pear-apps-utils-pattern-search.js',
     '^@tetherto/pearpass-lib-constants$':
-      '/Users/giorgi/Desktop/forks/pearpass-lib-constants/src/index.js'
+      '<rootDir>/test-stubs/pearpass-lib-constants.js'
   }
 }

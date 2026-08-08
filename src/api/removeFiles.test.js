@@ -22,11 +22,8 @@ describe('removeFiles', () => {
     await expect(vaultRemoveFiles([])).rejects.toThrow('File keys are required')
   })
 
-  it('calls pearpassVaultClient.activeVaultRemoveFile for each file', async () => {
-    const files = [
-      { recordId: 'rec1', fileId: 'f1' },
-      { recordId: 'rec2', fileId: 'f2' }
-    ]
+  it('removes both v2 and v1 file keys', async () => {
+    const files = [{ recordId: 'rec1', fileId: 'f1' }]
     pearpassVaultClient.activeVaultRemoveFile.mockResolvedValueOnce()
     pearpassVaultClient.activeVaultRemoveFile.mockResolvedValueOnce()
 
@@ -34,10 +31,10 @@ describe('removeFiles', () => {
 
     expect(pearpassVaultClient.activeVaultRemoveFile).toHaveBeenCalledTimes(2)
     expect(pearpassVaultClient.activeVaultRemoveFile).toHaveBeenCalledWith(
-      'record/rec1/file/f1'
+      'record-v2/rec1/file/f1'
     )
     expect(pearpassVaultClient.activeVaultRemoveFile).toHaveBeenCalledWith(
-      'record/rec2/file/f2'
+      'record/rec1/file/f1'
     )
   })
 

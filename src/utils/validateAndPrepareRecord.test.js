@@ -6,6 +6,7 @@ import { validateAndPrepareNoteData } from './validateAndPrepareNoteData'
 import { validateAndPreparePassPhraseData } from './validateAndPreparePassPhraseData'
 import { validateAndPrepareRecord } from './validateAndPrepareRecord'
 import { validateAndPrepareWifiPasswordData } from './validateAndPrepareWifiPasswordData'
+import { SCHEMA_V2 } from '../compat/recordSchema'
 import { VERSION } from '../constants/version'
 
 jest.mock('./validateAndPrepareCreditCardData', () => ({
@@ -75,6 +76,7 @@ describe('validateAndPrepareRecord', () => {
     expect(result).toEqual({
       id: 'test-id-123',
       version: VERSION.v1,
+      schema: SCHEMA_V2,
       type: 'login',
       vaultId: 'vault-123',
       data: { mockedLogin: true },
@@ -174,6 +176,7 @@ describe('validateAndPrepareRecord', () => {
     expect(result).toEqual({
       id: 'test-id-123',
       version: VERSION.v1,
+      schema: SCHEMA_V2,
       type: 'wifiPassword',
       vaultId: 'vault-123',
       data: { mockedWifiPassword: true },
@@ -206,6 +209,7 @@ describe('validateAndPrepareRecord', () => {
     expect(result).toEqual({
       id: 'test-id-123',
       version: VERSION.v1,
+      schema: SCHEMA_V2,
       type: 'passPhrase',
       vaultId: 'vault-123',
       data: { mockedPassPhrase: true },

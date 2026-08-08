@@ -5,6 +5,7 @@ import { getVaultById as getVaultByIdApi } from '../api/getVaultById'
 import { registerPeer } from '../api/inbox'
 import { listDevices } from '../api/listDevices'
 import { listRecords } from '../api/listRecords'
+import { SCHEMA_V2 } from '../compat/recordSchema'
 import { getCurrentDeviceName, pearpassVaultClient } from '../instances'
 import { addDeviceFactory } from '../utils/addDeviceFactory'
 import { logger } from '../utils/logger'
@@ -138,16 +139,19 @@ const healLocalDeviceEntryInner = async (vaultId, devices) => {
 
     if (found.match) {
       const existing = found.match
+      const needsSchemaBump = Number(existing.recordSchema) !== SCHEMA_V2
       if (
         !found.patchWriterKey &&
-        (existing.masterTopic ?? null) === masterTopic
+        (existing.masterTopic ?? null) === masterTopic &&
+        !needsSchemaBump
       ) {
         return snapshot
       }
       const healed = {
         ...existing,
         ...(found.patchWriterKey ? { writerKey } : {}),
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        recordSchema: SCHEMA_V2
       }
       if (masterTopic) healed.masterTopic = masterTopic
       else delete healed.masterTopic

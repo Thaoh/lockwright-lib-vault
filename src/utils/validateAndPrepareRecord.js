@@ -8,6 +8,7 @@ import { validateAndPrepareLoginData } from './validateAndPrepareLoginData'
 import { validateAndPrepareNoteData } from './validateAndPrepareNoteData'
 import { validateAndPreparePassPhraseData } from './validateAndPreparePassPhraseData'
 import { validateAndPrepareWifiPasswordData } from './validateAndPrepareWifiPasswordData'
+import { SCHEMA_V2 } from '../compat/recordSchema'
 import { RECORD_TYPES } from '../constants/recordTypes'
 import { VERSION } from '../constants/version'
 
@@ -107,6 +108,7 @@ export const validateAndPrepareRecord = (record) => {
   return validateRecord({
     id: record.id,
     version: VERSION.v1,
+    schema: SCHEMA_V2,
     type: record.type,
     vaultId: record.vaultId,
     data: recordData,

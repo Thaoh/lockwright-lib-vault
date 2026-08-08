@@ -6,12 +6,15 @@ describe('deleteRecord', () => {
     jest.clearAllMocks()
   })
 
-  it('should call activeVaultRemove with the correct path', async () => {
+  it('removes both record-v2 and record keys', async () => {
     const recordIds = ['record-123']
 
     await deleteRecords(recordIds)
 
-    expect(pearpassVaultClient.activeVaultRemove).toHaveBeenCalledTimes(1)
+    expect(pearpassVaultClient.activeVaultRemove).toHaveBeenCalledTimes(2)
+    expect(pearpassVaultClient.activeVaultRemove).toHaveBeenCalledWith(
+      'record-v2/record-123'
+    )
     expect(pearpassVaultClient.activeVaultRemove).toHaveBeenCalledWith(
       'record/record-123'
     )

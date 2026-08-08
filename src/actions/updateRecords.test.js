@@ -110,6 +110,13 @@ describe('updateRecord actions', () => {
       }
     ]
 
+    const currentRecord = {
+      ...payload[0],
+      data: { username: 'old', password: 'old' },
+      updatedAt: 1632000000000
+    }
+    listRecords.mockResolvedValue([currentRecord])
+
     const thunk = updateRecords(payload)
     await thunk(dispatch, getState)
 
@@ -128,7 +135,8 @@ describe('updateRecord actions', () => {
           ...payload[0].data,
           attachments: []
         },
-        updatedAt: mockDate
+        updatedAt: mockDate,
+        previousData: currentRecord
       }
     ])
   })

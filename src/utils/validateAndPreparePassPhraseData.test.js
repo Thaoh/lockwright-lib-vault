@@ -103,9 +103,7 @@ describe('validateAndPreparePassPhraseData', () => {
 
     validateAndPrepareCustomFields.mockReturnValue([])
 
-    expect(() =>
-      validateAndPreparePassPhraseData(passPhraseData)
-    ).not.toThrow()
+    expect(() => validateAndPreparePassPhraseData(passPhraseData)).not.toThrow()
   })
 
   test('should throw error for missing required title', () => {
