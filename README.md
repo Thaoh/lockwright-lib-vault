@@ -6,8 +6,6 @@
 
 Encrypted vault library for Lockwright. React and Redux integration.
 
-npm name is still `@tetherto/pearpass-lib-vault` until identity lands.
-
 Site: [lockwright.dexterity.works](https://lockwright.dexterity.works)
 
 Community fork of PearPass (Apache 2.0). Not affiliated with or endorsed by Tether Data or the Pears project. This GitHub repo stays a fork of `tetherto/pearpass-lib-vault` on purpose. Do not open pull requests against Tether.
