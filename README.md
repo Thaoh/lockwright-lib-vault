@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.svg" alt="Lockwright" width="128"/>
+</p>
+
 # pearpass-lib-vault
 
 A secure JavaScript library for managing encrypted vaults in applications. The pearpass-lib-vault provides robust encryption, decryption, and storage capabilities for sensitive data with React and Redux integration. 
