@@ -3,7 +3,6 @@ import { createSlice } from '@reduxjs/toolkit'
 import { fetchMasterPasswordStatus } from '../actions/fetchMasterPasswordStatus'
 import { initializeUser } from '../actions/initializeUser'
 import { resetState } from '../actions/resetState'
-import { logger } from '../utils/logger'
 
 const initialState = {
   isLoading: false,
@@ -43,8 +42,6 @@ export const userSlice = createSlice({
         state.error = null
       })
       .addCase(initializeUser.rejected, (state, action) => {
-        logger.error(action.error)
-
         state.isLoading = false
         state.error = action.error
       })

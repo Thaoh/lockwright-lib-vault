@@ -50,12 +50,17 @@ describe('userSlice', () => {
 
   it('should handle initializeUser.rejected', () => {
     const testError = new Error('Test error')
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
     const actual = userReducer(initialState, {
       type: initializeUser.rejected.type,
       error: testError
     })
     expect(actual.isLoading).toBe(false)
     expect(actual.error).toEqual(testError)
+    expect(consoleError).not.toHaveBeenCalled()
+    consoleError.mockRestore()
   })
 
   it('should handle resetState.fulfilled', () => {
