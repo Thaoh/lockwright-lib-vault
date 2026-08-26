@@ -2,58 +2,46 @@
   <img src="docs/logo.svg" alt="Lockwright" width="128"/>
 </p>
 
-# pearpass-lib-vault
+# lockwright-lib-vault
 
-A secure JavaScript library for managing encrypted vaults in applications. The pearpass-lib-vault provides robust encryption, decryption, and storage capabilities for sensitive data with React and Redux integration. 
+Encrypted vault library for Lockwright. React and Redux integration.
 
-This library requires one of the following client implementations to function:
-- **pearpass-lib-vault-bare** - For React Native applications
-- **pearpass-lib-vault-desktop** - For Pear desktop applications
+npm name is still `@tetherto/pearpass-lib-vault` until identity lands.
 
-Without a proper client implementation, the vault operations cannot be performed.
+Community fork of PearPass (Apache 2.0). Not affiliated with or endorsed by Tether Data or the Pears project.
+
+Needs a client:
+
+- **pearpass-lib-vault-bare** for React Native
+- **pearpass-lib-vault-desktop** for Pear desktop
+
+No client, no vault operations.
 
 ## Table of Contents
 
 - [Features](#features)
-- [Security Notice](#security-notice)
-- [Installation](#installation)
+- [Install](#install)
 - [Usage Examples](#usage-examples)
 - [Client Implementation Contract](#client-implementation-contract)
 - [Dependencies](#dependencies)
 - [Related Projects](#related-projects)
+- [License](#license)
 
 ## Features
 
-- **Secure Vault Management**
-  - Create, list, and access encrypted vaults
-  - Password-protected vaults with strong encryption
-  - Master password protection for vault access
+- Create, list, and access encrypted vaults
+- Master password protection
+- Configurable storage paths
+- Redux state, React hooks, actions and selectors
+- Jest tests with mocked clients
 
-- **Storage Flexibility**
-  - Configurable storage paths
-  - Structured data organization
-
-- **React & Redux Integration**
-  - Redux state management for vaults
-  - React hooks for easy component integration
-  - Actions and selectors for state management
-
-- **Comprehensive Testing**
-  - Full test coverage with Jest
-  - Mocked clients for reliable testing
-
-## Security Notice
-
-1. To ensure the security and integrity of your projects, please note that official PearPass packages are distributed exclusively through our GitHub organization.
-2. Any packages with similar names found on the npm registry or other third-party package managers are not affiliated with PearPass and should be strictly avoided. We recommend installing directly from this repository to ensure you are using the verified, open-source version.
-
-## Installation
-
-Install via npm:
+## Install
 
 ```bash
-npm install git+https://github.com/tetherto/pearpass-lib-vault.git
+pnpm add git+https://github.com/Thaoh/lockwright-lib-vault.git
 ```
+
+Imports stay `@tetherto/pearpass-lib-vault`. That npm name is not this fork if you install it from the npm registry.
 
 ## Usage Examples
 
@@ -242,13 +230,12 @@ EventEmitter surface (Node `events` convention):
 
 ## Related Projects
 
-- [@tetherto/pearpass-app-mobile](https://github.com/tetherto/pearpass-app-mobile) - A mobile app for PearPass, a password manager
-- [@tetherto/pearpass-app-desktop](https://github.com/tetherto/pearpass-app-desktop) - A desktop app for PearPass, a password manager
-- [@tetherto/pearpass-lib-vault-bare](https://github.com/tetherto/pearpass-lib-vault) - Client implementation for React Native applications
-- [@tetherto/pearpass-lib-vault-desktop](https://github.com/tetherto/pearpass-lib-desktop) - Client implementation for Pear desktop applications
-- [@tetherto/pear-apps-utils-validator](https://github.com/tetherto/pear-apps-utils-validator) - A library for validating data in Pear applications
-- [@tetherto/tether-dev-docs](https://github.com/tetherto/tether-dev-docs) - Documentations and guides for developers
+- [lockwright-app-mobile](https://github.com/Thaoh/lockwright-app-mobile)
+- [lockwright-app-desktop](https://github.com/Thaoh/lockwright-app-desktop)
+- [lockwright-app-browser-extension](https://github.com/Thaoh/lockwright-app-browser-extension)
+- [lockwright-lib-vault-core](https://github.com/Thaoh/lockwright-lib-vault-core)
+- [lockwright-lib-constants](https://github.com/Thaoh/lockwright-lib-constants)
 
 ## License
 
-This project is licensed under the Apache License, Version 2.0. See the [LICENSE](./LICENSE) file for details.
+Apache License 2.0. See `LICENSE.md` and `NOTICE.md`.
