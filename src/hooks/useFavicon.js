@@ -45,7 +45,10 @@ export const useFavicon = (params) => {
         }
         setIsLoading(false)
       } catch (err) {
-        console.warn('Favicon fetch failed:', err)
+        const message = err instanceof Error ? err.message : String(err)
+        if (!message.toLowerCase().includes('favicon not found')) {
+          console.warn('Favicon fetch failed:', err)
+        }
         setFaviconSrc(null)
         setHasError(true)
         setIsLoading(false)

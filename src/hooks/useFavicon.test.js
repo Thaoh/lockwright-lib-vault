@@ -87,6 +87,25 @@ describe('useFavicon', () => {
     expect(console.warn).toHaveBeenCalledWith('Favicon fetch failed:', error)
   })
 
+  test('should not warn when the worklet reports Favicon not found', async () => {
+    mockFetchFavicon.mockRejectedValue(new Error('Error: Favicon not found'))
+
+    const { result } = renderHook(() =>
+      useFavicon({ url: 'http://example.com' })
+    )
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(result.current).toEqual({
+      faviconSrc: null,
+      isLoading: false,
+      hasError: true
+    })
+    expect(console.warn).not.toHaveBeenCalled()
+  })
+
   test('should not fetch if url is empty', () => {
     const { result } = renderHook(() => useFavicon({ url: '' }))
 
