@@ -26,6 +26,14 @@ const initialState = {
   error: null
 }
 
+const ensureRecords = (state) => {
+  if (!state.data) {
+    state.data = { records: [] }
+  } else if (!Array.isArray(state.data.records)) {
+    state.data.records = []
+  }
+}
+
 export const vaultSlice = createSlice({
   name: 'vault',
   initialState: initialState,
@@ -67,6 +75,7 @@ export const vaultSlice = createSlice({
       })
       .addCase(createRecord.fulfilled, (state, action) => {
         state.isRecordLoading = false
+        ensureRecords(state)
         const newRecord = action.payload
         if (newRecord?.data?.otp) {
           const otp = newRecord.data.otp
@@ -102,6 +111,7 @@ export const vaultSlice = createSlice({
       })
       .addCase(updateRecords.fulfilled, (state, action) => {
         state.isRecordLoading = false
+        ensureRecords(state)
         state.data.records = action?.payload ?? []
       })
       .addCase(updateRecords.rejected, (state, action) => {
@@ -118,6 +128,7 @@ export const vaultSlice = createSlice({
       })
       .addCase(deleteRecords.fulfilled, (state, action) => {
         state.isRecordLoading = false
+        ensureRecords(state)
         state.data.records = action?.payload ?? []
       })
       .addCase(deleteRecords.rejected, (state, action) => {
@@ -133,6 +144,7 @@ export const vaultSlice = createSlice({
       })
       .addCase(createFolder.fulfilled, (state, action) => {
         state.isFolderLoading = false
+        ensureRecords(state)
         state.data.records.push(action.payload)
       })
       .addCase(createFolder.rejected, (state, action) => {
@@ -148,6 +160,7 @@ export const vaultSlice = createSlice({
       })
       .addCase(renameFolder.fulfilled, (state, action) => {
         state.isFolderLoading = false
+        ensureRecords(state)
         state.data.records = action?.payload ?? []
       })
       .addCase(renameFolder.rejected, (state, action) => {
@@ -162,6 +175,7 @@ export const vaultSlice = createSlice({
       })
       .addCase(deleteFolder.fulfilled, (state, action) => {
         state.isFolderLoading = false
+        ensureRecords(state)
         state.data.records = action?.payload ?? []
       })
       .addCase(deleteFolder.rejected, (state, action) => {

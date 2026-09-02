@@ -62,4 +62,23 @@ describe('createRecord', () => {
 
     await expect(createRecord(record)).rejects.toThrow(error)
   })
+
+  it('succeeds when v2 write works and v1 projection fails', async () => {
+    const record = {
+      id: 'test-id',
+      vaultId: 'test-vault-id',
+      type: 'login',
+      data: {
+        title: 'Example',
+        websites: ['https://example.com']
+      }
+    }
+
+    pearpassVaultClient.activeVaultAdd
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('timeout'))
+      .mockRejectedValueOnce(new Error('timeout'))
+
+    await expect(createRecord(record)).resolves.toBeUndefined()
+  })
 })

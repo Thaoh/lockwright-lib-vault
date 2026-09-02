@@ -18,6 +18,11 @@ export const writeRecordDualStore = async (record, { skipV1 = false } = {}) => {
   try {
     await pearpassVaultClient.activeVaultAdd(recordKeyV1(asV2.id), projected)
   } catch {
-    await pearpassVaultClient.activeVaultAdd(recordKeyV1(asV2.id), projected)
+    try {
+      await pearpassVaultClient.activeVaultAdd(recordKeyV1(asV2.id), projected)
+    } catch {
+      // v2 is canonical. v1 is a projection for old readers. A v1 timeout
+      // after a successful v2 write must not fail the save.
+    }
   }
 }

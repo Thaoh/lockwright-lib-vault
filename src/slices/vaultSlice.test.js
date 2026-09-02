@@ -202,6 +202,33 @@ describe('vaultSlice', () => {
     })
   })
 
+  describe('createRecord.fulfilled with incomplete vault data', () => {
+    it('does not throw when vault data is still null', () => {
+      const mockRecord = { id: 'rec1', type: 'password' }
+      expect(() => {
+        store.dispatch({
+          type: createRecord.fulfilled.type,
+          payload: mockRecord
+        })
+      }).not.toThrow()
+      expect(store.getState().vault.isRecordLoading).toBe(false)
+      expect(store.getState().vault.data.records).toEqual([mockRecord])
+    })
+
+    it('does not throw when records is missing', () => {
+      store.dispatch({
+        type: getVaultById.fulfilled.type,
+        payload: { id: '123' }
+      })
+      const mockRecord = { id: 'rec1', type: 'password' }
+      store.dispatch({
+        type: createRecord.fulfilled.type,
+        payload: mockRecord
+      })
+      expect(store.getState().vault.data.records).toEqual([mockRecord])
+    })
+  })
+
   describe('updateRecords', () => {
     beforeEach(() => {
       store.dispatch({
