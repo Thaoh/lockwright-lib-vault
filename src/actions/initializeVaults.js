@@ -17,18 +17,18 @@ export const initializeVaults = createAsyncThunk(
       password
     })
 
-    await safeStartPersonalSwarm()
+    // Join in the background. swarm.join().flushed() has no timeout;
+    // awaiting it left the unlock spinner up until DHT announce finished.
+    safeStartPersonalSwarm()
     runActionScan().catch(() => {})
 
     return listVaults()
   }
 )
 
-const safeStartPersonalSwarm = async () => {
+const safeStartPersonalSwarm = () => {
   if (typeof pearpassVaultClient?.personalSwarmInit !== 'function') return
-  try {
-    await pearpassVaultClient.personalSwarmInit()
-  } catch (err) {
+  Promise.resolve(pearpassVaultClient.personalSwarmInit()).catch((err) => {
     logger.error('initializeVaults: personalSwarmInit failed', { err })
-  }
+  })
 }

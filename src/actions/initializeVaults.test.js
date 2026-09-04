@@ -1,6 +1,7 @@
 import { initializeVaults } from './initializeVaults'
 import { init } from '../api/init'
 import { listVaults } from '../api/listVaults'
+import { pearpassVaultClient } from '../instances'
 
 jest.mock('../api/init', () => ({
   init: jest.fn()
@@ -89,5 +90,26 @@ describe('initializeVaults', () => {
 
     expect(result.type).toBe(initializeVaults.rejected.type)
     expect(result.error.message).toContain(errorMessage)
+  })
+
+  it('must not wait for personalSwarmInit before listing vaults', async () => {
+    listVaults.mockResolvedValue([{ id: 'vault-1' }])
+    pearpassVaultClient.personalSwarmInit.mockReturnValue(new Promise(() => {}))
+
+    const thunk = initializeVaults({ password: 'pw' })
+    const result = await Promise.race([
+      thunk(dispatch, getState),
+      new Promise((_, reject) =>
+        setTimeout(
+          () =>
+            reject(new Error('initializeVaults waited on personalSwarmInit')),
+          100
+        )
+      )
+    ])
+
+    expect(result.payload).toEqual([{ id: 'vault-1' }])
+    expect(listVaults).toHaveBeenCalled()
+    expect(pearpassVaultClient.personalSwarmInit).toHaveBeenCalled()
   })
 })
