@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { useOtpRefresh } from './useOtpRefresh'
+import { useOtpWatch } from './useOtpWatch'
 import { generateHotpNext } from '../api/generateHotpNext'
 import { OTP_TYPE } from '../constants/otpType'
 import { updateOtpCodes } from '../slices/otpSlice'
@@ -19,6 +20,7 @@ export const useOtp = ({ recordId, otpPublic }) => {
   const dispatch = useDispatch()
   const otpRefresh = useOtpRefresh()
   const [isLoading, setIsLoading] = useState(false)
+  useOtpWatch(otpPublic && recordId ? recordId : null)
 
   const generateNext = useCallback(async () => {
     if (otpPublic?.type !== OTP_TYPE.HOTP || !recordId) return

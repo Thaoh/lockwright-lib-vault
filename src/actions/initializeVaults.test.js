@@ -112,4 +112,25 @@ describe('initializeVaults', () => {
     expect(listVaults).toHaveBeenCalled()
     expect(pearpassVaultClient.personalSwarmInit).toHaveBeenCalled()
   })
+
+  it('starts personal swarm only after listVaults returns', async () => {
+    let resolveList
+    listVaults.mockReturnValue(
+      new Promise((resolve) => {
+        resolveList = resolve
+      })
+    )
+
+    const thunk = initializeVaults({ password: 'pw' })
+    const pending = thunk(dispatch, getState)
+
+    await Promise.resolve()
+    expect(pearpassVaultClient.personalSwarmInit).not.toHaveBeenCalled()
+
+    resolveList([{ id: 'vault-1' }])
+    const result = await pending
+
+    expect(result.payload).toEqual([{ id: 'vault-1' }])
+    expect(pearpassVaultClient.personalSwarmInit).toHaveBeenCalled()
+  })
 })

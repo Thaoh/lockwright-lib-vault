@@ -70,6 +70,7 @@ export { generateHotpNext } from './api/generateHotpNext.js'
 export { useOtp } from './hooks/useOtp'
 export { OtpRefreshProvider } from './context/OtpRefreshProvider'
 export { useOtpRefresh } from './hooks/useOtpRefresh'
+export { useOtpWatch } from './hooks/useOtpWatch'
 export { useTimerAnimation } from './hooks/useTimerAnimation'
 
 export { formatOtpCode } from './utils/formatOtpCode'

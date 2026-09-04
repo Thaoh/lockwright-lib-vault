@@ -2,6 +2,39 @@ import { useState, useEffect } from 'react'
 
 import { pearpassVaultClient } from '../instances'
 
+const inFlight = new Map()
+const resolved = new Map()
+
+export const clearFaviconCache = () => {
+  inFlight.clear()
+  resolved.clear()
+}
+
+const loadFavicon = (url) => {
+  const cached = resolved.get(url)
+  if (cached) return Promise.resolve(cached)
+
+  const pending = inFlight.get(url)
+  if (pending) return pending
+
+  const request = pearpassVaultClient.fetchFavicon(url).then(
+    (res) => {
+      inFlight.delete(url)
+      if (res && res.favicon) {
+        resolved.set(url, res)
+      }
+      return res
+    },
+    (err) => {
+      inFlight.delete(url)
+      throw err
+    }
+  )
+
+  inFlight.set(url, request)
+  return request
+}
+
 /**
  * Hook to fetch and manage favicon state for a given URL
  * @param {{ url: string }} params - Parameters object containing the URL
@@ -28,13 +61,13 @@ export const useFavicon = (params) => {
     setIsLoading(true)
     setHasError(false)
 
-    const loadFavicon = async () => {
+    const apply = async () => {
       try {
         if (!pearpassVaultClient) {
           throw new Error('Pearpass vault client is not initialized')
         }
 
-        const res = await pearpassVaultClient.fetchFavicon(url)
+        const res = await loadFavicon(url)
 
         if (res && res.favicon) {
           setFaviconSrc(res.favicon)
@@ -55,7 +88,7 @@ export const useFavicon = (params) => {
       }
     }
 
-    loadFavicon()
+    apply()
   }, [url])
 
   return { faviconSrc, isLoading, hasError }

@@ -19,7 +19,8 @@ describe('listRecords', () => {
     const result = await listRecords()
 
     expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledWith(
-      'record-v2/'
+      'record-v2/',
+      { includeOtpCodes: false }
     )
     expect(result[0].schema).toBe(2)
     expect(result[0].data.uris).toEqual([
@@ -33,7 +34,8 @@ describe('listRecords', () => {
 
     await expect(listRecords()).rejects.toThrow(mockError)
     expect(pearpassVaultClient.activeVaultList).toHaveBeenCalledWith(
-      'record-v2/'
+      'record-v2/',
+      { includeOtpCodes: false }
     )
   })
 })

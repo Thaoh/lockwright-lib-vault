@@ -8,6 +8,7 @@ import { OtpRefreshContext } from '../context/OtpRefreshContext'
  * @returns {(() => void) | null}
  */
 export const useOtpRefresh = () => {
-  const ref = useContext(OtpRefreshContext)
-  return ref ? () => ref.current?.() : null
+  const ctx = useContext(OtpRefreshContext)
+  const refreshRef = ctx?.refreshRef
+  return refreshRef ? () => refreshRef.current?.() : null
 }

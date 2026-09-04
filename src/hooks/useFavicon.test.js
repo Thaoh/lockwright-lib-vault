@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 
-import { useFavicon } from './useFavicon'
+import { useFavicon, clearFaviconCache } from './useFavicon'
 import { setPearpassVaultClient } from '../instances'
 
 const mockFetchFavicon = jest.fn()
@@ -14,6 +14,7 @@ describe('useFavicon', () => {
     jest.clearAllMocks()
     console.warn = jest.fn()
     setPearpassVaultClient(mockClient)
+    clearFaviconCache()
   })
 
   test('should return initial state correctly', () => {
@@ -138,5 +139,24 @@ describe('useFavicon', () => {
     })
 
     expect(mockFetchFavicon).toHaveBeenCalledTimes(2)
+  })
+
+  test('reuses one worklet fetch for the same url', async () => {
+    const mockFavicon = 'data:image/png;base64,abc'
+    mockFetchFavicon.mockResolvedValue({ favicon: mockFavicon })
+
+    const { result: first } = renderHook(() =>
+      useFavicon({ url: 'http://shared.example' })
+    )
+    const { result: second } = renderHook(() =>
+      useFavicon({ url: 'http://shared.example' })
+    )
+
+    await waitFor(() => {
+      expect(first.current.faviconSrc).toBe(mockFavicon)
+      expect(second.current.faviconSrc).toBe(mockFavicon)
+    })
+
+    expect(mockFetchFavicon).toHaveBeenCalledTimes(1)
   })
 })

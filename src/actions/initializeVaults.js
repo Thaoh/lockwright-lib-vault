@@ -17,12 +17,14 @@ export const initializeVaults = createAsyncThunk(
       password
     })
 
-    // Join in the background. swarm.join().flushed() has no timeout;
-    // awaiting it left the unlock spinner up until DHT announce finished.
+    const vaults = await listVaults()
+
+    // Join after the first list. Hyperswarm construct + join() share the
+    // worklet with listVaults; awaiting flushed() used to stall unlock.
     safeStartPersonalSwarm()
     runActionScan().catch(() => {})
 
-    return listVaults()
+    return vaults
   }
 )
 

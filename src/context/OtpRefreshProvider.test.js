@@ -5,7 +5,9 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
 import { OtpRefreshProvider } from './OtpRefreshProvider'
+import { useOtp } from '../hooks/useOtp'
 import { useOtpRefresh } from '../hooks/useOtpRefresh'
+import { useOtpWatch } from '../hooks/useOtpWatch'
 import otpReducer from '../slices/otpSlice'
 
 const mockGenerateOtpCodesByIds = jest.fn()
@@ -45,7 +47,19 @@ describe('OtpRefreshProvider', () => {
     jest.clearAllMocks()
   })
 
-  test('polls codes for records with otpPublic', async () => {
+  test('does not poll until a screen asks for codes', () => {
+    const records = [
+      { id: 'rec-1', otpPublic: { type: 'TOTP', period: 30 } },
+      { id: 'rec-2', otpPublic: { type: 'TOTP', period: 30 } }
+    ]
+
+    const store = createTestStore(records)
+    renderHook(() => null, { wrapper: createWrapper(store) })
+
+    expect(mockGenerateOtpCodesByIds).not.toHaveBeenCalled()
+  })
+
+  test('polls every otp record when Authenticator watches all', async () => {
     const records = [
       { id: 'rec-1', otpPublic: { type: 'TOTP', period: 30 } },
       { id: 'rec-2', otpPublic: { type: 'TOTP', period: 30 } }
@@ -57,10 +71,57 @@ describe('OtpRefreshProvider', () => {
     ])
 
     const store = createTestStore(records)
-    renderHook(() => null, { wrapper: createWrapper(store) })
+    renderHook(() => useOtpWatch('all'), { wrapper: createWrapper(store) })
 
     await waitFor(() => {
       expect(mockGenerateOtpCodesByIds).toHaveBeenCalledWith(['rec-1', 'rec-2'])
+    })
+  })
+
+  test('polls only the record a details screen watches', async () => {
+    const records = [
+      { id: 'rec-1', otpPublic: { type: 'TOTP', period: 30 } },
+      { id: 'rec-2', otpPublic: { type: 'TOTP', period: 30 } }
+    ]
+
+    mockGenerateOtpCodesByIds.mockResolvedValue([
+      { recordId: 'rec-2', code: '654321', timeRemaining: 20 }
+    ])
+
+    const store = createTestStore(records)
+    renderHook(() => useOtpWatch('rec-2'), { wrapper: createWrapper(store) })
+
+    await waitFor(() => {
+      expect(mockGenerateOtpCodesByIds).toHaveBeenCalledWith(['rec-2'])
+    })
+    expect(mockGenerateOtpCodesByIds).not.toHaveBeenCalledWith([
+      'rec-1',
+      'rec-2'
+    ])
+  })
+
+  test('useOtp on a details field asks for that record only', async () => {
+    const records = [
+      { id: 'rec-1', otpPublic: { type: 'TOTP', period: 30 } },
+      { id: 'rec-2', otpPublic: { type: 'TOTP', period: 30 } }
+    ]
+
+    mockGenerateOtpCodesByIds.mockResolvedValue([
+      { recordId: 'rec-2', code: '654321', timeRemaining: 20 }
+    ])
+
+    const store = createTestStore(records)
+    renderHook(
+      () =>
+        useOtp({
+          recordId: 'rec-2',
+          otpPublic: { type: 'TOTP', period: 30 }
+        }),
+      { wrapper: createWrapper(store) }
+    )
+
+    await waitFor(() => {
+      expect(mockGenerateOtpCodesByIds).toHaveBeenCalledWith(['rec-2'])
     })
   })
 
@@ -72,7 +133,7 @@ describe('OtpRefreshProvider', () => {
     ])
 
     const store = createTestStore(records)
-    renderHook(() => null, { wrapper: createWrapper(store) })
+    renderHook(() => useOtpWatch('all'), { wrapper: createWrapper(store) })
 
     await waitFor(() => {
       const state = store.getState()
@@ -87,7 +148,7 @@ describe('OtpRefreshProvider', () => {
     const records = [{ id: 'rec-1' }, { id: 'rec-2' }]
 
     const store = createTestStore(records)
-    renderHook(() => null, { wrapper: createWrapper(store) })
+    renderHook(() => useOtpWatch('all'), { wrapper: createWrapper(store) })
 
     expect(mockGenerateOtpCodesByIds).not.toHaveBeenCalled()
   })
@@ -102,7 +163,7 @@ describe('OtpRefreshProvider', () => {
     mockGenerateOtpCodesByIds.mockResolvedValue([])
 
     const store = createTestStore(records)
-    renderHook(() => null, { wrapper: createWrapper(store) })
+    renderHook(() => useOtpWatch('all'), { wrapper: createWrapper(store) })
 
     await waitFor(() => {
       expect(mockGenerateOtpCodesByIds).toHaveBeenCalledWith(['rec-1', 'rec-3'])
@@ -117,7 +178,7 @@ describe('OtpRefreshProvider', () => {
     ])
 
     const store = createTestStore(records)
-    renderHook(() => null, { wrapper: createWrapper(store) })
+    renderHook(() => useOtpWatch('all'), { wrapper: createWrapper(store) })
 
     await waitFor(() => {
       expect(mockGenerateOtpCodesByIds).toHaveBeenCalledTimes(1)
@@ -132,7 +193,7 @@ describe('OtpRefreshProvider', () => {
     })
   })
 
-  test('cleans up interval on unmount', async () => {
+  test('stops polling when the watching screen unmounts', async () => {
     const records = [{ id: 'rec-1', otpPublic: { type: 'TOTP', period: 30 } }]
 
     mockGenerateOtpCodesByIds.mockResolvedValue([
@@ -140,7 +201,7 @@ describe('OtpRefreshProvider', () => {
     ])
 
     const store = createTestStore(records)
-    const { unmount } = renderHook(() => null, {
+    const { unmount } = renderHook(() => useOtpWatch('all'), {
       wrapper: createWrapper(store)
     })
 
@@ -164,7 +225,7 @@ describe('OtpRefreshProvider', () => {
     mockGenerateOtpCodesByIds.mockRejectedValue(new Error('Network error'))
 
     const store = createTestStore(records)
-    renderHook(() => null, { wrapper: createWrapper(store) })
+    renderHook(() => useOtpWatch('all'), { wrapper: createWrapper(store) })
 
     await act(async () => {
       await Promise.resolve()
@@ -181,9 +242,13 @@ describe('OtpRefreshProvider', () => {
     ])
 
     const store = createTestStore(records)
-    const { result } = renderHook(() => useOtpRefresh(), {
-      wrapper: createWrapper(store)
-    })
+    const { result } = renderHook(
+      () => {
+        useOtpWatch('all')
+        return useOtpRefresh()
+      },
+      { wrapper: createWrapper(store) }
+    )
 
     await waitFor(() => {
       expect(mockGenerateOtpCodesByIds).toHaveBeenCalledTimes(1)
